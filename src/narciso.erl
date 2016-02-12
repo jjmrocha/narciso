@@ -24,16 +24,22 @@
 -spec uuid() -> binary().
 uuid() ->
 	% xxxxxxxx-xxxx-4xxx-8xxx-xxxxxxxxxxxx
-	Time = erlang:phash2(os:timestamp(), 16#100000000),
-	Host = erlang:phash2(node(), 16#10000),
-	Pid = 16#4000 + erlang:phash2(self(), 16#1000),
-	Rand1 = 16#8000 + rand:uniform(16#fff),
-	Rand2 = rand:uniform(16#ffffffffffff),
-	Hex = io_lib:format("~8.16.0b-~4.16.0b-~4.16.0b-~4.16.0b-~12.16.0b", [Time, Host, Pid, Rand1, Rand2]),
+	Time = erlang:phash2(utc_date(), 16#100000000),
+	Host = erlang:phash2(host_process(), 16#10000),
+	Rand1 = 16#4000 + rand:uniform(16#fff),
+	Rand2 = 16#8000 + rand:uniform(16#fff),
+	Rand3 = rand:uniform(16#ffffffffffff),
+	Hex = io_lib:format("~8.16.0b-~4.16.0b-~4.16.0b-~4.16.0b-~12.16.0b", [Time, Host, Rand1, Rand2, Rand3]),
 	list_to_binary(Hex).
 
 %% ====================================================================
 %% Internal functions
 %% ====================================================================
 
+utc_date() ->
+	TS = {_,_, Micro} = os:timestamp(),
+	{Date, Time} = calendar:now_to_universal_time(TS),
+	{Date, Time, Micro}.
 
+host_process() ->
+	{node(), self()}.
