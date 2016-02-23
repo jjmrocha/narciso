@@ -19,22 +19,39 @@
 %% ====================================================================
 %% API functions
 %% ====================================================================
--export([uuid/0]).
+-export([uuid/0, id/0]).
+-export([id_to_uuid/1]).
 
 -spec uuid() -> binary().
 uuid() ->
 	% xxxxxxxx-xxxx-4xxx-8xxx-xxxxxxxxxxxx
+	V4 = v4(),
+	to_string(V4).
+	
+-spec id() -> binary().
+id() ->
+	[A, B, C, D, E] = v4(),
+	<<A:32, B:16, C:16, D:16, E:48>>.
+
+-spec id_to_uuid(Id :: binary()) -> binary().	
+id_to_uuid(<<A:32, B:16, C:16, D:16, E:48>>) ->
+	to_string([A, B, C, D, E]).
+
+%% ====================================================================
+%% Internal functions
+%% ====================================================================
+
+to_string([A, B, C, D, E]) ->
+	Hex = io_lib:format("~8.16.0b-~4.16.0b-~4.16.0b-~4.16.0b-~12.16.0b", [A, B, C, D, E]),
+	list_to_binary(Hex).
+
+v4() ->
 	Time = erlang:phash2(utc_date(), 16#100000000),
 	Host = erlang:phash2(host_process(), 16#10000),
 	Rand1 = 16#4000 + rand:uniform(16#fff),
 	Rand2 = 16#8000 + rand:uniform(16#fff),
 	Rand3 = rand:uniform(16#ffffffffffff),
-	Hex = io_lib:format("~8.16.0b-~4.16.0b-~4.16.0b-~4.16.0b-~12.16.0b", [Time, Host, Rand1, Rand2, Rand3]),
-	list_to_binary(Hex).
-
-%% ====================================================================
-%% Internal functions
-%% ====================================================================
+	[Time, Host, Rand1, Rand2, Rand3].
 
 utc_date() ->
 	TS = {_,_, Micro} = os:timestamp(),
