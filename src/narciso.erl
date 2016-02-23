@@ -19,8 +19,8 @@
 %% ====================================================================
 %% API functions
 %% ====================================================================
--export([uuid/0, unique/0]).
--export([unique_to_uuid/1, uuid_to_unique/1]).
+-export([uuid/0, unique/0, token/0]).
+-export([unique_to_uuid/1, uuid_to_unique/1, token_to_unique/1]).
 
 -spec uuid() -> binary().
 uuid() ->
@@ -31,6 +31,10 @@ uuid() ->
 unique() ->
 	[A, B, C, D, E] = v4(),
 	<<A:32, B:16, C:16, D:16, E:48>>.
+
+-spec token() -> binary().
+token() ->
+	base64:encode(unique()).
 
 -spec unique_to_uuid(Id :: binary()) -> binary().	
 unique_to_uuid(<<A:32, B:16, C:16, D:16, E:48>>) ->
@@ -44,6 +48,10 @@ uuid_to_unique(<<AA:64, _:8, BB:32, _:8, CC:32, _:8, DD:32, _:8, EE:96>>) ->
 	D = binary_to_integer(DD, 16),
 	E = binary_to_integer(EE, 16),
 	<<A:32, B:16, C:16, D:16, E:48>>.
+
+-spec token_to_unique(Token :: binary()) -> binary().	
+token_to_unique(Token) ->
+	base64:decode(Token).
 
 %% ====================================================================
 %% Internal functions
