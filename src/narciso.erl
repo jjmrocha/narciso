@@ -29,7 +29,7 @@ unique() ->
 	<<A:32, B:16, C:16, D:16, E:48>>.
 	
 -spec uuid() -> binary().
-uuid() -> to_string(v4()).
+uuid() -> uuid(v4()).
 
 -spec token() -> binary().
 token() -> token(unique()).
@@ -37,11 +37,16 @@ token() -> token(unique()).
 -spec id() -> integer().
 id() -> id(unique()).
 	
--spec uuid(Id :: binary()) -> binary().	
-uuid(<<A:32, B:16, C:16, D:16, E:48>>) -> to_string([A, B, C, D, E]).
+-spec uuid(Unique :: binary()) -> binary().	
+uuid(<<A:32, B:16, C:16, D:16, E:48>>) -> uuid([A, B, C, D, E]);
+uuid([A, B, C, D, E]) ->
+	UUID = io_lib:format("~8.16.0b-~4.16.0b-~4.16.0b-~4.16.0b-~12.16.0b", [A, B, C, D, E]),
+	list_to_binary(UUID).
 	
 -spec token(Unique :: binary()) -> binary().	
-token(Unique = <<_:128>>) -> base64:encode(Unique).	
+token(<<Id:128>>) -> 
+	Base36 = io_lib:format("~.36.0b", [Id]),
+	list_to_binary(Base36).	
 
 -spec id(Unique :: binary()) -> integer().	
 id(<<Id:128>>) -> Id.
@@ -56,7 +61,9 @@ uuid_to_unique(<<AA:64, _:8, BB:32, _:8, CC:32, _:8, DD:32, _:8, EE:96>>) ->
 	<<A:32, B:16, C:16, D:16, E:48>>.
 	
 -spec token_to_unique(Token :: binary()) -> binary().	
-token_to_unique(Token) -> base64:decode(Token).
+token_to_unique(Token) -> 
+	Id = binary_to_integer(Token, 36),
+	<<Id:128>>.
 
 -spec id_to_unique(Id :: integer()) -> binary().	
 id_to_unique(Id) -> <<Id:128>>.	
@@ -64,18 +71,12 @@ id_to_unique(Id) -> <<Id:128>>.
 %% ====================================================================
 %% Internal functions
 %% ====================================================================
-
-to_string([A, B, C, D, E]) ->
-	%% xxxxxxxx-xxxx-4xxx-8xxx-xxxxxxxxxxxx
-	Hex = io_lib:format("~8.16.0b-~4.16.0b-~4.16.0b-~4.16.0b-~12.16.0b", [A, B, C, D, E]),
-	list_to_binary(Hex).
-
 v4() ->
 	Time = erlang:phash2(utc_date(), 16#100000000),
 	Host = erlang:phash2(host_process(), 16#10000),
-	Rand1 = 16#4000 + rand:uniform(16#fff),
-	Rand2 = 16#8000 + rand:uniform(16#fff),
-	Rand3 = rand:uniform(16#ffffffffffff),
+	Rand1 = crypto:rand_uniform(16#4000, 16#5000),
+	Rand2 = crypto:rand_uniform(16#8000, 16#9000),
+	Rand3 = crypto:rand_uniform(0, 16#1000000000000),
 	[Time, Host, Rand1, Rand2, Rand3].
 
 utc_date() ->
