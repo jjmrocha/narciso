@@ -19,8 +19,10 @@
 %% ====================================================================
 %% API functions
 %% ====================================================================
--export([uuid/0, unique/0, token/0]).
--export([unique_to_uuid/1, uuid_to_unique/1, token_to_unique/1]).
+-export([uuid/0, unique/0, token/0, id/0]).
+-export([unique_to_uuid/1, uuid_to_unique/1]).
+-export([unique_to_token/1, token_to_unique/1]).
+-export([unique_to_id/1, id_to_unique/1]).
 
 -spec uuid() -> binary().
 uuid() ->
@@ -34,8 +36,12 @@ unique() ->
 
 -spec token() -> binary().
 token() ->
-	base64:encode(unique()).
+	unique_to_token(unique()).
 
+-spec id() -> integer().
+id() ->
+	unique_to_id(unique()).
+	
 -spec unique_to_uuid(Id :: binary()) -> binary().	
 unique_to_uuid(<<A:32, B:16, C:16, D:16, E:48>>) ->
 	to_string([A, B, C, D, E]).
@@ -49,9 +55,22 @@ uuid_to_unique(<<AA:64, _:8, BB:32, _:8, CC:32, _:8, DD:32, _:8, EE:96>>) ->
 	E = binary_to_integer(EE, 16),
 	<<A:32, B:16, C:16, D:16, E:48>>.
 
+-spec unique_to_token(Unique :: binary()) -> binary().	
+unique_to_token(Unique) ->
+	base64:encode(Unique).
+
 -spec token_to_unique(Token :: binary()) -> binary().	
 token_to_unique(Token) ->
 	base64:decode(Token).
+	
+-spec unique_to_id(Unique :: binary()) -> integer().	
+unique_to_id(Unique) ->
+	<<Id:128>> = Unique,
+	Id.
+
+-spec id_to_unique(Id :: integer()) -> binary().	
+id_to_unique(Id) ->
+	<<Id:128>>.	
 
 %% ====================================================================
 %% Internal functions
