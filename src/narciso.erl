@@ -48,11 +48,11 @@ unique_to_uuid(<<A:32, B:16, C:16, D:16, E:48>>) ->
 
 -spec uuid_to_unique(Uuid :: binary()) -> binary().	
 uuid_to_unique(<<AA:64, _:8, BB:32, _:8, CC:32, _:8, DD:32, _:8, EE:96>>) ->
-	A = binary_to_integer(AA, 16),
-	B = binary_to_integer(BB, 16),
-	C = binary_to_integer(CC, 16),
-	D = binary_to_integer(DD, 16),
-	E = binary_to_integer(EE, 16),
+	A = binary_to_integer(<<AA:64>>, 16),
+	B = binary_to_integer(<<BB:32>>, 16),
+	C = binary_to_integer(<<CC:32>>, 16),
+	D = binary_to_integer(<<DD:32>>, 16),
+	E = binary_to_integer(<<EE:96>>, 16),
 	<<A:32, B:16, C:16, D:16, E:48>>.
 
 -spec unique_to_token(Unique :: binary()) -> binary().	
