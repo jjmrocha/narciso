@@ -65,12 +65,9 @@ id(<<Id:128>>) -> Id.
 %% ====================================================================
 -spec uuid_to_unique(Uuid :: binary()) -> binary().	
 uuid_to_unique(<<AA:64, _:8, BB:32, _:8, CC:32, _:8, DD:32, _:8, EE:96>>) ->
-	A = binary_to_integer(<<AA:64>>, 16),
-	B = binary_to_integer(<<BB:32>>, 16),
-	C = binary_to_integer(<<CC:32>>, 16),
-	D = binary_to_integer(<<DD:32>>, 16),
-	E = binary_to_integer(<<EE:96>>, 16),
-	<<A:32, B:16, C:16, D:16, E:48>>.
+	Hex = <<AA:64, BB:32, CC:32, DD:32, EE:96>>,
+	Id = binary_to_integer(Hex, 16),
+	<<Id:128>>.
 
 -spec token_to_unique(Token :: binary()) -> binary().	
 token_to_unique(Token) -> 
@@ -84,7 +81,7 @@ id_to_unique(Id) -> <<Id:128>>.
 %% Validation functions
 %% ====================================================================
 -spec is_unique(Unique :: binary()) -> boolean().	
-is_unique(<<_:48, Version:4, _:12, Variant:2, _:62>>) when Version =:= ?UUID_VERSION andalso Variant =:= ?UUID_VARIANT -> true;
+is_unique(<<_:48, Version:4, _:12, Variant:2, _:62>>) -> Version =:= ?UUID_VERSION andalso Variant =:= ?UUID_VARIANT;
 is_unique(_) -> false.
 
 -spec is_uuid(UUID :: binary()) -> boolean().
