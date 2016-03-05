@@ -13,7 +13,7 @@ Using rebar:
 
 ```erlang
 {deps, [
-	{async, ".*", {git, "https://github.com/jjmrocha/narciso.git", "master"}}
+	{narciso, ".*", {git, "https://github.com/jjmrocha/narciso.git", "master"}}
 ]}.
 ```
 
