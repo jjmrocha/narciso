@@ -33,7 +33,7 @@ Generation of unique IDs:
 
 % token
 3> narciso:token().
-<<"3z389ykb061d068ux5iy6gbva">>
+<<"3Z389YKB061D068UX5IY6GBVA">>
 
 % 128 bits integer
 4> narciso:id().
@@ -52,7 +52,7 @@ Generation of unique IDs:
 
 % token from unique
 3> narciso:token(Unique).    
-<<"3w7nni025418b96lydzqxyb8i">>
+<<"3W7NNI025418B96LYDZQXYB8I">>
 
 % 128 bits integer from unique
 4> narciso:id(Unique).       
@@ -66,7 +66,7 @@ Converting diferent formats back to 128 bits unique:
 <<65,201,173,96,12,171,78,27,175,200,207,151,251,185,70,98>>
 
 % From token
-2> narciso:token_to_unique(<<"3w7nni025418b96lydzqxyb8i">>).
+2> narciso:token_to_unique(<<"3W7NNI025418B96LYDZQXYB8I">>).
 <<65,201,173,96,12,171,78,27,175,200,207,151,251,185,70,98>>
 
 % From a 128 bits integer
@@ -109,7 +109,7 @@ false
 false
 14> narciso:is_token(<<"1475bfc9358e1db44d53">>).           
 false
-15> narciso:is_token(<<"3w7nni025418b96lydzqxyb8i">>).
+15> narciso:is_token(<<"3W7NNI025418B96LYDZQXYB8I">>).
 true
 
 % Validation of 128 bits integers
