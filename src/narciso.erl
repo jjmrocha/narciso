@@ -53,9 +53,7 @@ uuid(<<A:32, B:16, C:16, D:16, E:48>>) ->
 	list_to_binary(UUID).
 
 -spec token(Unique :: binary()) -> binary().	
-token(<<Id:128>>) -> 
-	Base36 = io_lib:format("~.36.0b", [Id]),
-	list_to_binary(Base36).	
+token(<<Id:128>>) -> integer_to_binary(Id, 36).
 
 -spec id(Unique :: binary()) -> integer().	
 id(<<Id:128>>) -> Id.
@@ -96,7 +94,7 @@ is_uuid(_) -> false.
 
 -spec is_token(Token :: binary()) -> boolean().
 is_token(Token) when is_binary(Token) ->
-	case re:run(Token, <<"^([0-9a-z]+)$">>) of
+	case re:run(Token, <<"^([0-9A-Z]+)$">>) of
 		{match, _} -> 
 			Unique = token_to_unique(Token),
 			is_unique(Unique);
