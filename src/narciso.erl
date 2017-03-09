@@ -32,7 +32,7 @@
 %% ====================================================================
 -spec unique() -> binary().
 unique() ->
-	<<AB:48, _:4, C:12, _:2, DE:62>> = crypto:rand_bytes(16),
+	<<AB:48, _:4, C:12, _:2, DE:62>> = crypto:strong_rand_bytes(16),
 	<<AB:48, ?UUID_VERSION:4, C:12, ?UUID_VARIANT:2, DE:62>>.
 
 -spec uuid() -> binary().
